@@ -30,7 +30,9 @@ const server = new McpServer({
   version: "1.0.0",
 });
 
-server.tool("list_databases", "List all databases on the connected MongoDB instance", {}, async () => {
+server.registerTool("list_databases", {
+  description: "List all databases on the connected MongoDB instance",
+}, async () => {
   await ensureConnected();
   const result = await client.db("admin").admin().listDatabases();
   return {
@@ -43,34 +45,31 @@ server.tool("list_databases", "List all databases on the connected MongoDB insta
   };
 });
 
-server.tool(
-  "list_collections",
-  "List all collections in a given database",
-  { database: z.string().describe("The database name") },
-  async ({ database }) => {
-    await ensureConnected();
-    const collections = await client.db(database).listCollections().toArray();
-    const names = collections.map((c) => c.name);
-    return {
-      content: [
-        {
-          type: "text" as const,
-          text: JSON.stringify(names, null, 2),
-        },
-      ],
-    };
-  },
-);
+server.registerTool("list_collections", {
+  description: "List all collections in a given database",
+  inputSchema: { database: z.string().describe("The database name") },
+}, async ({ database }) => {
+  await ensureConnected();
+  const collections = await client.db(database).listCollections().toArray();
+  const names = collections.map((c) => c.name);
+  return {
+    content: [
+      {
+        type: "text" as const,
+        text: JSON.stringify(names, null, 2),
+      },
+    ],
+  };
+});
 
-server.tool(
-  "run_aggregation",
-  "Run an aggregation pipeline on a collection",
-  {
+server.registerTool("run_aggregation", {
+  description: "Run an aggregation pipeline on a collection",
+  inputSchema: {
     database: z.string().describe("The database name"),
     collection: z.string().describe("The collection name"),
     pipeline: z.array(z.record(z.string(), z.any())).describe("The aggregation pipeline stages"),
   },
-  async ({ database, collection, pipeline }) => {
+}, async ({ database, collection, pipeline }) => {
     const writeStage = pipeline.find((stage) =>
       Object.keys(stage).some((key) => WRITE_STAGES.has(key)),
     );
@@ -101,8 +100,7 @@ server.tool(
         },
       ],
     };
-  },
-);
+});
 
 const transport = new StdioServerTransport();
 await server.connect(transport);
