@@ -1,18 +1,22 @@
 # MongoDB MCP Server
 
+[![npm version](https://img.shields.io/npm/v/mongodb-mcp.svg)](https://www.npmjs.com/package/mongodb-mcp)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
 A read-only [Model Context Protocol](https://modelcontextprotocol.io) (MCP) server for querying MongoDB databases. Designed to be used with MCP-compatible clients like Claude Code, Claude Desktop, etc.
 
-## Setup
+## Quick Start
 
-```bash
-npm install
-npm run build
-```
-
-Or run directly with npx:
+Run directly with npx — no installation needed:
 
 ```bash
 MONGODB_URI="mongodb://localhost:27017" npx mongodb-mcp
+```
+
+Or install globally:
+
+```bash
+npm install -g mongodb-mcp
 ```
 
 ## Environment Variables
@@ -21,11 +25,7 @@ MONGODB_URI="mongodb://localhost:27017" npx mongodb-mcp
 | ------------- | -------- | ------------------------------------------------ |
 | `MONGODB_URI` | Yes      | MongoDB connection string (e.g. `mongodb://localhost:27017` or `mongodb+srv://...`) |
 
-Copy `.env.example` to `.env` and fill in your connection string.
-
 ## Configuration
-
-The server requires a `MONGODB_URI` environment variable pointing to your MongoDB instance.
 
 ### Claude Code
 
@@ -35,8 +35,8 @@ Add to your `.mcp.json`:
 {
   "mcpServers": {
     "mongodb": {
-      "command": "node",
-      "args": ["/path/to/dist/index.js"],
+      "command": "npx",
+      "args": ["mongodb-mcp"],
       "env": {
         "MONGODB_URI": "mongodb+srv://user:pass@cluster.mongodb.net/dbname"
       }
@@ -53,8 +53,8 @@ Add to your Claude Desktop config (`~/Library/Application Support/Claude/claude_
 {
   "mcpServers": {
     "mongodb": {
-      "command": "node",
-      "args": ["/path/to/dist/index.js"],
+      "command": "npx",
+      "args": ["mongodb-mcp"],
       "env": {
         "MONGODB_URI": "mongodb+srv://user:pass@cluster.mongodb.net/dbname"
       }
