@@ -20,8 +20,13 @@ let connected = false;
 
 async function ensureConnected() {
   if (!connected) {
-    await client.connect();
-    connected = true;
+    try {
+      await client.connect();
+      connected = true;
+    } catch (error) {
+      const message = error instanceof Error ? error.message : String(error);
+      throw new Error(`Failed to connect to MongoDB: ${message}`);
+    }
   }
 }
 
@@ -100,6 +105,13 @@ server.registerTool("run_aggregation", {
         },
       ],
     };
+});
+
+process.on("SIGINT", async () => {
+  if (connected) {
+    await client.close();
+  }
+  process.exit(0);
 });
 
 const transport = new StdioServerTransport();
