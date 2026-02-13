@@ -1,6 +1,6 @@
 {
   "name": "mongodb-mcp",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "type": "module",
   "description": "A read-only Model Context Protocol (MCP) server for querying MongoDB databases",
   "main": "dist/index.js",
