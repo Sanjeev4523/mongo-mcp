@@ -14,6 +14,7 @@ A Model Context Protocol (MCP) server that provides tools for interacting with M
 - `list_databases` — list all databases on the connected MongoDB instance
 - `list_collections` — list all collections in a given database
 - `run_aggregation` — run an aggregation pipeline on a collection
+- `run_aggregation_to_file` — run an aggregation pipeline and write results to a JSONL file on disk (returns metadata only)
 
 ## Project Structure
 

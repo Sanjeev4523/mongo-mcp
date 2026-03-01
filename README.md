@@ -87,6 +87,17 @@ Runs an aggregation pipeline on a collection.
 | `collection` | string   | The collection name          |
 | `pipeline`   | object[] | The aggregation pipeline stages |
 
+### `run_aggregation_to_file`
+
+Runs an aggregation pipeline and writes results to a JSONL file on disk instead of returning them over MCP. Returns only metadata (document count, file path, file size), which avoids loading large result sets into the agent's context window. Use CLI tools like `jq`, `head`, or the `Read` tool to selectively inspect the output file.
+
+| Parameter     | Type     | Description                                      |
+| ------------- | -------- | ------------------------------------------------ |
+| `database`    | string   | The database name                                |
+| `collection`  | string   | The collection name                              |
+| `pipeline`    | object[] | The aggregation pipeline stages                  |
+| `output_path` | string   | Absolute file path where JSONL results are written |
+
 ## Safety
 
 - **Read-only mode** — Write stages (`$out`, `$merge`) in aggregation pipelines are rejected with an error.
