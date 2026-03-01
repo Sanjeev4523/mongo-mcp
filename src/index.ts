@@ -112,7 +112,7 @@ server.registerTool("run_aggregation", {
 
 server.registerTool("run_aggregation_to_file", {
   description:
-    "Run an aggregation pipeline on a collection and write results to a JSONL file on disk. " +
+    "Run an aggregation pipeline on a collection and write results to a JSON file on disk. " +
     "Returns only metadata (document count, file path, file size) instead of the actual documents, " +
     "which avoids loading large result sets into the context window. " +
     "Use CLI tools like jq, head, or the Read tool to selectively inspect the output file.",
@@ -124,7 +124,7 @@ server.registerTool("run_aggregation_to_file", {
       .describe("The aggregation pipeline stages"),
     output_path: z
       .string()
-      .describe("Absolute file path where JSONL results will be written"),
+      .describe("Absolute file path where JSON results will be written"),
   },
 }, async ({ database, collection, pipeline, output_path }) => {
   // Block write stages
@@ -180,17 +180,23 @@ server.registerTool("run_aggregation_to_file", {
 
   let documentCount = 0;
 
-  // Stream results to file as JSONL
+  // Stream results to file as a JSON array
   const writeStream = createWriteStream(output_path, { encoding: "utf-8" });
   try {
+    writeStream.write("[\n");
+    let first = true;
     for await (const doc of cursor) {
-      const line = JSON.stringify(doc) + "\n";
-      const canContinue = writeStream.write(line);
+      if (!first) {
+        writeStream.write(",\n");
+      }
+      first = false;
+      const canContinue = writeStream.write(JSON.stringify(doc, null, 2));
       if (!canContinue) {
         await new Promise<void>((resolve) => writeStream.once("drain", resolve));
       }
       documentCount++;
     }
+    writeStream.write("\n]");
   } finally {
     await new Promise<void>((resolve, reject) => {
       writeStream.end(() => {
