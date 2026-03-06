@@ -77,6 +77,15 @@ Lists all collections in a given database.
 | ---------- | ------ | ----------------- |
 | `database` | string | The database name |
 
+### `list_indexes`
+
+Lists all indexes on a collection.
+
+| Parameter    | Type   | Description         |
+| ------------ | ------ | ------------------- |
+| `database`   | string | The database name   |
+| `collection` | string | The collection name |
+
 ### `run_aggregation`
 
 Runs an aggregation pipeline on a collection.
@@ -101,6 +110,7 @@ Runs an aggregation pipeline and writes results to a JSON file on disk instead o
 ## Safety
 
 - **Read-only mode** — Write stages (`$out`, `$merge`) in aggregation pipelines are rejected with an error.
+- **Query timeout** — Aggregation queries have a 50-second server-side timeout (`maxTimeMS`) to prevent runaway queries.
 - **Read preference** — The connection uses `secondaryPreferred` read preference as defense in depth.
 
 ## Development
