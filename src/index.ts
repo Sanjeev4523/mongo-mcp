@@ -70,6 +70,25 @@ server.registerTool("list_collections", {
   };
 });
 
+server.registerTool("list_indexes", {
+  description: "List all indexes on a collection",
+  inputSchema: {
+    database: z.string().describe("The database name"),
+    collection: z.string().describe("The collection name"),
+  },
+}, async ({ database, collection }) => {
+  await ensureConnected();
+  const indexes = await client.db(database).collection(collection).indexes();
+  return {
+    content: [
+      {
+        type: "text" as const,
+        text: JSON.stringify(indexes, null, 2),
+      },
+    ],
+  };
+});
+
 server.registerTool("run_aggregation", {
   description: "Run an aggregation pipeline on a collection",
   inputSchema: {
@@ -98,7 +117,7 @@ server.registerTool("run_aggregation", {
     const results = await client
       .db(database)
       .collection(collection)
-      .aggregate(pipeline)
+      .aggregate(pipeline, { maxTimeMS: 50_000 })
       .toArray();
     return {
       content: [
@@ -176,7 +195,7 @@ server.registerTool("run_aggregation_to_file", {
   const cursor = client
     .db(database)
     .collection(collection)
-    .aggregate(pipeline);
+    .aggregate(pipeline, { maxTimeMS: 50_000 });
 
   let documentCount = 0;
 
